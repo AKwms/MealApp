@@ -8,6 +8,7 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import MealDetailScreen from "./screens/MealDetailScreen";
 import FavoriteScreen from "./screens/FavoriteScreen";
 import { Ionicons } from "@expo/vector-icons";
+import FavoritesContextProvider from "./store/context/favorites-context";
 
 const Stack = createNativeStackNavigator();
 const Drawer = createDrawerNavigator();
@@ -53,42 +54,44 @@ export default function App() {
   return (
     <>
       <StatusBar style="light" />
-      <NavigationContainer>
-        <Stack.Navigator
-          screenOptions={{
-            headerStyle: { backgroundColor: "#9067B6" },
-            headerTintColor: "white",
-            contentStyle: { backgroundColor: "#111827" },
-            // i used it on the stack navigator to apply the above settings to all screens !
-          }} //Note: first screen on Stack.navigator is the default starting screen !
-        >
-          <Stack.Screen
-            name="MealsCategories"
-            component={DrawerNavigator}
-            options={{
-              // title: "All Categories",
-              headerShown: false, //remove the title of the stack
-            }}
-          />
-          <Stack.Screen
-            name="MealsOverview"
-            component={MealsOverviewScreen}
-            options={({ route, navigation }) => {
-              const catTitle = route.params.title;
-              return {
-                title: catTitle,
-              };
-            }}
-          />
-          <Stack.Screen
-            name="MealDetail"
-            component={MealDetailScreen}
-            options={{
-              title: "About The Meal",
-            }}
-          />
-        </Stack.Navigator>
-      </NavigationContainer>
+      <FavoritesContextProvider>
+        <NavigationContainer>
+          <Stack.Navigator
+            screenOptions={{
+              headerStyle: { backgroundColor: "#9067B6" },
+              headerTintColor: "white",
+              contentStyle: { backgroundColor: "#111827" },
+              // i used it on the stack navigator to apply the above settings to all screens !
+            }} //Note: first screen on Stack.navigator is the default starting screen !
+          >
+            <Stack.Screen
+              name="MealsCategories"
+              component={DrawerNavigator}
+              options={{
+                // title: "All Categories",
+                headerShown: false, //remove the title of the stack
+              }}
+            />
+            <Stack.Screen
+              name="MealsOverview"
+              component={MealsOverviewScreen}
+              options={({ route, navigation }) => {
+                const catTitle = route.params.title;
+                return {
+                  title: catTitle,
+                };
+              }}
+            />
+            <Stack.Screen
+              name="MealDetail"
+              component={MealDetailScreen}
+              options={{
+                title: "About The Meal",
+              }}
+            />
+          </Stack.Navigator>
+        </NavigationContainer>
+      </FavoritesContextProvider>
     </>
   );
 }

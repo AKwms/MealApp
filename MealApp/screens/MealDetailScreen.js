@@ -1,27 +1,48 @@
-import { useLayoutEffect } from "react";
-import { Text, View, Image, StyleSheet, ScrollView, Button } from "react-native";
+import { useContext, useLayoutEffect } from "react";
+import {
+  Text,
+  View,
+  Image,
+  StyleSheet,
+  ScrollView
+} from "react-native";
 import { MEALS } from "../data/dummy-data";
 import MealDetails from "../components/MealDetails";
 import Subtitle from "../components/MealDetail/Subtitle";
 import List from "../components/MealDetail/List";
 import IconButton from "../components/IconButton";
+import { FavoritesContext } from '../store/context/favorites-context';
 
 function MealDetailScreen({ route, navigation }) {
+  const favoriteMealsCtx = useContext(FavoritesContext);
+
   const mealId = route.params.mealId; //its passed by mealItem component !
 
   const selectedMeal = MEALS.find((meal) => meal.id === mealId); //give me all the info of the component has the specific id
 
-  function headerButtonPressHandler() {
-    console.log('Pressed!')
+  const mealIsFavorite = favoriteMealsCtx.ids.includes(mealId); //true if this id mealId included and false if not
+
+  function changeFavoriteStatusHandler() {
+    if (mealIsFavorite) {
+      favoriteMealsCtx.removeFavorite(mealId);
+    } else {
+      favoriteMealsCtx.addFavorite(mealId);
+    }
   }
 
   useLayoutEffect(() => {
     navigation.setOptions({
       headerRight: () => {
-        return <IconButton whenPress={headerButtonPressHandler} icon="star" color="white"/>
-      }
+        return (
+          <IconButton
+            icon={mealIsFavorite ? 'star' : 'star-outline'}
+            color="white"
+            whenPress={changeFavoriteStatusHandler}
+          />
+        );
+      },
     });
-  }, [navigation, headerButtonPressHandler]);
+  }, [navigation, changeFavoriteStatusHandler]);
 
   return (
     //you have to determine the width and height of the image in this case !
@@ -52,7 +73,7 @@ export default MealDetailScreen;
 
 const styles = StyleSheet.create({
   rootContainer: {
-    marginBottom: 32
+    marginBottom: 32,
   },
   image: {
     width: "100%",
